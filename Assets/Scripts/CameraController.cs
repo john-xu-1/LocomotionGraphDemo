@@ -14,7 +14,7 @@ public class CameraController : MonoBehaviour
     void Update()
     {
 
-        if (!isUIActive)
+        if (!Utility.IsMouseOverUI() && !isUIActive)
         {
             Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize + Input.mouseScrollDelta.y * scrollScale, minCameraSize, maxCameraSize);
 

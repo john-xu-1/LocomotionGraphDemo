@@ -11,14 +11,15 @@ namespace LocomotionGraph
     {
 
         public LocomotionGraph locomotionGraph;
+        public LocomotionEdgeHandler locomotionEdgeHandler;
 
         public bool isUIActive = false;
 
         public enum HandleLocomotionGraphFunction { displayPlatformGraph, printPlatformPath, isValidWall }
         public HandleLocomotionGraphFunction locomotionFunction;
 
-        private bool displayPlatformGraph;
-        List<PlatformChunkGraph> platformGraph;
+        //private bool displayPlatformGraph;
+        //List<PlatformChunkGraph> platformGraph;
 
         public class PlatformChunkGraph
         {
@@ -40,29 +41,29 @@ namespace LocomotionGraph
         void Update()
         {
             if(!isUIActive) HandleMouseClickDebugging();
-            DisplayPlatformGraph();
+            //DisplayPlatformGraph();
         }
 
-        protected void DisplayPlatformGraph()
-        {
-            if (displayPlatformGraph)
-            {
-                foreach (PlatformChunkGraph platform in platformGraph)
-                {
-                    foreach (int nodeID in platform.platform.connectedPlatforms)
-                    {
-                        PlatformChunk destination = locomotionGraph.RoomChunk.GetPlatform(nodeID);
-                        Vector2 start = platform.platform.GetCenterTilePos();
-                        Vector2 dir = destination.GetCenterTilePos() - start;
-                        Debug.DrawRay(start, dir, platform.graphColor);
-                        //LineRenderer line = new LineRenderer();
-                        LineRenderer line = Instantiate(lineprefab).GetComponent<LineRenderer>();
-                        line.SetPositions(new Vector3[] { start, (Vector2)destination.GetCenterTilePos()});
-                        //Debug.Log($"{platform.graphColor}");
-                    }
-                }
-            }
-        }
+        //protected void DisplayPlatformGraph()
+        //{
+        //    if (displayPlatformGraph)
+        //    {
+        //        foreach (PlatformChunkGraph platform in platformGraph)
+        //        {
+        //            foreach (int nodeID in platform.platform.connectedPlatforms)
+        //            {
+        //                PlatformChunk destination = locomotionGraph.RoomChunk.GetPlatform(nodeID);
+        //                Vector2 start = platform.platform.GetCenterTilePos();
+        //                Vector2 dir = destination.GetCenterTilePos() - start;
+        //                Debug.DrawRay(start, dir, platform.graphColor);
+        //                //LineRenderer line = new LineRenderer();
+        //                LineRenderer line = Instantiate(lineprefab).GetComponent<LineRenderer>();
+        //                line.SetPositions(new Vector3[] { start, (Vector2)destination.GetCenterTilePos()});
+        //                //Debug.Log($"{platform.graphColor}");
+        //            }
+        //        }
+        //    }
+        //}
 
         private Vector2Int TilePosFromClick(Vector2 mousePosition)
         {
@@ -91,13 +92,32 @@ namespace LocomotionGraph
         {
             if (locomotionGraph.RoomChunk != null && Input.GetMouseButtonUp(0))
             {
-                displayPlatformGraph = false;
-                Vector2Int clickTile = TilePosFromClick(Input.mousePosition);// new Vector2Int((int)Mathf.Floor(Camera.main.ScreenToWorldPoint(Input.mousePosition).x), (int)Mathf.Floor(Camera.main.ScreenToWorldPoint(Input.mousePosition).y));
+                locomotionEdgeHandler.DisplayLocomotionGraph(false);
+;                //displayPlatformGraph = false;
+                Vector2Int clickTile = TilePosFromClick(Input.mousePosition);
 
+                // find platformID from the clicked tile
                 startingPlatformID = locomotionGraph.RoomChunk.GetPlatformID(clickTile);
                 int filledChunkID = startingPlatformID / FilledChunk.nodeIDOffset;
                 int platformChunkId = startingPlatformID % FilledChunk.nodeIDOffset;
                 Debug.LogWarning($"clickTile: {clickTile} PlatformIDClicked: {startingPlatformID}  filledChunkID:{filledChunkID} platformID{platformChunkId}");
+
+                // check that clicked tile is within the room chunk, not an empty tile and surface tile
+                if (platformChunkId < 0) {
+                    Debug.LogWarning($"Click is out of range of RoomChunk. startingPlatformID({startingPlatformID}) filledChunkID({filledChunkID}) platformID({platformChunkId})");
+                    return;
+                }
+                else if(startingPlatformID == 0)
+                {
+                    Debug.LogWarning($"Click is on empty tile and not a valid staring platform. startingPlatformID({startingPlatformID}) filledChunkID({filledChunkID}) platformID({platformChunkId})");
+                    return;
+                }else if(platformChunkId == 0)
+                {
+                    Debug.LogWarning($"Click is on filled tile but is not a platform tile. startingPlatformID({startingPlatformID}) filledChunkID({filledChunkID}) platformID({platformChunkId})");
+                    return;
+                }
+
+                // start thread to generate the chunch graph
                 Thread thread = new Thread(GenerateChunkGraphThread);
                 thread.Start();
             }
@@ -178,13 +198,16 @@ namespace LocomotionGraph
                 platformChunkGraph.graphColor = Color.red;
                 platformChunkGraphs.Add(platformChunkGraph);
             }
-            platformGraph = platformChunkGraphs;
-            displayPlatformGraph = true;
+            locomotionEdgeHandler.DisplayLocomotionGraph(platformChunkGraphs);
+            locomotionEdgeHandler.DisplayLocomotionGraph(true);
+            //platformGraph = platformChunkGraphs;
+            //displayPlatformGraph = true;
         }
 
         public void GenerateConnectedChunkGraph()
         {
-            displayPlatformGraph = false;
+            //displayPlatformGraph = false;
+            locomotionEdgeHandler.DisplayLocomotionGraph(false);
             Thread thread = new Thread(GenerateConnectedChunkGraphThread);
             thread.Start();
         }
@@ -292,8 +315,10 @@ namespace LocomotionGraph
             }
             Debug.Log($"chunkGroups.Count:{chunkGroups.Count}  platforms.Count:{platforms.Count}");
 
-            platformGraph = platforms;
-            displayPlatformGraph = true;
+            //platformGraph = platforms;
+            //displayPlatformGraph = true;
+            locomotionEdgeHandler.DisplayLocomotionGraph(platforms);
+            locomotionEdgeHandler.DisplayLocomotionGraph(true);
         }
 
         private void PrintPlatform(Vector2Int startTile)

@@ -30,7 +30,7 @@ namespace LocomotionGraph
             HandleMouseClickDebugging();
 
             //debug platformGraph
-            DisplayPlatformGraph();
+            //DisplayPlatformGraph();
         }
 
 

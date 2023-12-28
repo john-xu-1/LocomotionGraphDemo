@@ -185,6 +185,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   locomotionGraph: {fileID: 18255541}
+  locomotionEdgeHandler: {fileID: 966664193}
   isUIActive: 0
   locomotionFunction: 0
   generateChunkGraphDepth: 0
@@ -194,6 +195,24 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 7440228860887512247, guid: f627dc34451f5422d886e1ff18e4c4e2, type: 3}
   m_PrefabInstance: {fileID: 7440228860732905426}
   m_PrefabAsset: {fileID: 0}
+--- !u!120 &257368934 stripped
+LineRenderer:
+  m_CorrespondingSourceObject: {fileID: 7440228860887512244, guid: f627dc34451f5422d886e1ff18e4c4e2, type: 3}
+  m_PrefabInstance: {fileID: 7440228860732905426}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &257368936
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 257368933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f350bc5a9c22a4444a88eaafba09d84e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  line: {fileID: 257368934}
 --- !u!1 &285505876
 GameObject:
   m_ObjectHideFlags: 0
@@ -496,6 +515,52 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &966664192
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 966664194}
+  - component: {fileID: 966664193}
+  m_Layer: 0
+  m_Name: Locomotion Edge Handler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &966664193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 966664192}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0e2a77a063de7f43a51bebbc17c2eeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  locomotionGraph: {fileID: 18255541}
+  locomotionEdgePrefab: {fileID: 257368936}
+  DisplayRaycast: 0
+--- !u!4 &966664194
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 966664192}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1293116713
 GameObject:
@@ -921,6 +986,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 8736402829988253721, guid: 55b3669e3d6db4c7faa37e6b5cf258bd, type: 3}
+      propertyPath: m_Name
+      value: Edit Button
+      objectReference: {fileID: 0}
     - target: {fileID: 8736402831467283861, guid: 55b3669e3d6db4c7faa37e6b5cf258bd, type: 3}
       propertyPath: lgd
       value: 
