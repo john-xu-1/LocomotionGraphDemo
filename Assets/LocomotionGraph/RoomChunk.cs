@@ -202,7 +202,7 @@ namespace LocomotionGraph
         {
             if (tile.x - minTile.x < 0 || tile.x - minTile.x > width - 1 || -tile.y - maxTile.y < 0 || -tile.y - maxTile.y > height - 1)
             {
-                Debug.Log("Out of bounds");
+                Debug.LogWarning("Out of bounds");
                 return -1;
             }
                 

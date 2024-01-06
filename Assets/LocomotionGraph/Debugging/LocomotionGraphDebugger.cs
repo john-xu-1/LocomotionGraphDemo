@@ -94,10 +94,30 @@ namespace LocomotionGraph
                 displayPlatformGraph = false;
                 Vector2Int clickTile = TilePosFromClick(Input.mousePosition);// new Vector2Int((int)Mathf.Floor(Camera.main.ScreenToWorldPoint(Input.mousePosition).x), (int)Mathf.Floor(Camera.main.ScreenToWorldPoint(Input.mousePosition).y));
 
+                // find platformID from click tile 
                 startingPlatformID = locomotionGraph.RoomChunk.GetPlatformID(clickTile);
                 int filledChunkID = startingPlatformID / FilledChunk.nodeIDOffset;
                 int platformChunkId = startingPlatformID % FilledChunk.nodeIDOffset;
-                Debug.LogWarning($"clickTile: {clickTile} PlatformIDClicked: {startingPlatformID}  filledChunkID:{filledChunkID} platformID{platformChunkId}");
+                //Debug.LogWarning($"clickTile: {clickTile} PlatformIDClicked: {startingPlatformID}  filledChunkID:{filledChunkID} platformID{platformChunkId}");
+
+                // check that clicked tile is within the room chunk, not an empty tile and a surface tile
+                if (startingPlatformID < 0)
+                {
+                    Debug.LogWarning($"Click is out of range of RoomChunk. startingPlatformID({startingPlatformID}) filledChunkID({filledChunkID}) platformID({platformChunkId})");
+                    return;
+                }
+                else if (startingPlatformID == 0)
+                {
+                    Debug.LogWarning($"Click is on empty tile and not a starting platform. startingPlatformID({startingPlatformID}) filledChunkID({filledChunkID}) platformID({platformChunkId})");
+                    return;
+                }
+                else if (platformChunkId == 0)
+                {
+                    Debug.LogWarning($"Click is on filled tile but is not a platform tile. startingPlatformID({startingPlatformID}) filledChunkID({filledChunkID}) platformID({platformChunkId})");
+                    return;
+                }
+
+                // start thread to generate the chunk graph
                 Thread thread = new Thread(GenerateChunkGraphThread);
                 thread.Start();
             }

@@ -434,7 +434,7 @@ GameObject:
   - component: {fileID: 8736402829988253718}
   - component: {fileID: 8736402829988253719}
   m_Layer: 5
-  m_Name: Edit
+  m_Name: Edit Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
