@@ -27,10 +27,7 @@ namespace LocomotionGraph
         // Update is called once per frame
         void Update()
         {
-            HandleMouseClickDebugging();
-
-            //debug platformGraph
-            //DisplayPlatformGraph();
+            if(!global::Utility.IsMouseOverUI()) HandleMouseClickDebugging();
         }
 
 

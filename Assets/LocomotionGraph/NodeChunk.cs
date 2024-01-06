@@ -38,6 +38,26 @@ namespace LocomotionGraph
         {
             return GetTilePos(GetCenterTile());
         }
+
+
+        /// <summary>
+        /// Returns true if connectedID was valid and thus removed.
+        /// </summary>
+        /// <param name="connectedID"></param>
+        /// <returns></returns>
+        public virtual bool RemoveConnectedPlatform(int connectedID)
+        {
+            if (connectedPlatforms.Contains(connectedID))
+            {
+                connectedPlatforms.Remove(connectedID);
+                return true;
+            }
+            else
+            {
+                Debug.LogWarning($"invalid connectedID({connectedID}) to be removed.");
+                return false;
+            }
+        }
     }
 }
 
