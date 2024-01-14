@@ -14,6 +14,7 @@ public class LocomotionGraphDebuggerUI : MonoBehaviour
     public void updateDepth()
     {
         lgd.generateChunkGraphDepth = int.Parse(input.text);
+        
     }
 
     public void updateChoice()

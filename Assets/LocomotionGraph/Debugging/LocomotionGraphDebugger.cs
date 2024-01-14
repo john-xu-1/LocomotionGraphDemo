@@ -101,6 +101,7 @@ namespace LocomotionGraph
         {
 
             // start thread to generate the chunch graph
+            Debug.Log($"startPlatformID {startingPlatformID}");
             Thread thread = new Thread(GenerateChunkGraphThread);
             thread.Start();
         }

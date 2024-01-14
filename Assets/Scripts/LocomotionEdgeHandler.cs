@@ -16,9 +16,33 @@ public class LocomotionEdgeHandler : MonoBehaviour
     public bool edgeHovered { get { return edgesHovered > 0; } }
     private int edgesHovered = 0;
 
+    public struct EdgeID
+    {
+        public int sourceID;
+        public int sinkID;
+    }
+
+    private EdgeID toRemoveEdge = default;
+    private int removingEdgeCounter = -1;
+
+    private List<EdgeID> removedEdgeIDs = new List<EdgeID>();
+
     private void Update()
     {
-        if (displayPlatformGraph) DisplayLocomotionGraph();
+        if (removingEdgeCounter == 0)
+        {
+            RemoveEdge(toRemoveEdge);
+        }
+        if (removingEdgeCounter >= 0)
+        {
+            removingEdgeCounter--;
+            //Debug.Log(removingEdgeCounter);
+        }
+
+        if (displayPlatformGraph)
+        {
+            DisplayLocomotionGraph();
+        }
         DisplayPlatformGraph();
     }
 
@@ -30,6 +54,7 @@ public class LocomotionEdgeHandler : MonoBehaviour
 
     public void DisplayLocomotionGraph(List<LocomotionGraphDebugger.PlatformChunkGraph> platformGraph)
     {
+        removedEdgeIDs.Clear();
         this.platformGraph = platformGraph;
         displayPlatformGraph = true;
     }
@@ -62,15 +87,35 @@ public class LocomotionEdgeHandler : MonoBehaviour
 
     public void RemoveEdge(int sourceID, int sinkID)
     {
-        PlatformChunk platformChunk = locomotionGraph.RoomChunk.GetPlatform(sourceID);
+        toRemoveEdge = new EdgeID();
+        toRemoveEdge.sinkID = sinkID;
+        toRemoveEdge.sourceID = sourceID;
+        removingEdgeCounter = 2;
+    }
+
+    public void RemoveEdge(EdgeID edgeID)
+    {
+        PlatformChunk platformChunk = locomotionGraph.RoomChunk.GetPlatform(edgeID.sourceID);
 
 
-        if (platformChunk.RemoveConnectedPlatform(sinkID))
+        if (platformChunk.RemoveConnectedPlatform(edgeID.sinkID))
         {
             Debug.Log("Redraw everything!!!");
             EdgeHovering(-1);
+            HandleReturnLocomotionEdges();
             FindObjectOfType<LocomotionGraphDebugger>().DisplayPlatformGraph();
-            
+            removedEdgeIDs.Add(edgeID);
+        }
+    }
+
+    public void AddEdge(EdgeID edgeID)
+    {
+        PlatformChunk platformChunk = locomotionGraph.RoomChunk.GetPlatform(edgeID.sourceID);
+        if (platformChunk.AddConnectPlatform(edgeID.sinkID))
+        {
+            HandleReturnLocomotionEdges();
+            FindObjectOfType<LocomotionGraphDebugger>().DisplayPlatformGraph();
+            removedEdgeIDs.Remove(edgeID);
         }
     }
 

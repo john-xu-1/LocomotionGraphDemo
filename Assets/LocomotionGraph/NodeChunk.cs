@@ -58,6 +58,20 @@ namespace LocomotionGraph
                 return false;
             }
         }
+
+        public virtual bool AddConnectPlatform(int connectedID)
+        {
+            if (!connectedPlatforms.Contains(connectedID))
+            {
+                connectedPlatforms.Add(connectedID);
+                return true;
+            }
+            else
+            {
+                Debug.LogWarning($"connectedID({connectedID}) is already in connectedPlatoforms");
+                return false;
+            }
+        }
     }
 }
 
