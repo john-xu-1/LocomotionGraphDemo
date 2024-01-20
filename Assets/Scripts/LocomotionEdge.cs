@@ -43,7 +43,7 @@ public class LocomotionEdge : MonoBehaviour
         locomotionEdgeHandler.EdgeHovering(-1);
     }
 
-    public void OnMouseDown()
+    public void OnMouseUp()
     {
         FindObjectOfType<LocomotionEdgeHandler>().RemoveEdge(sourceNodeID, sinkNodeID);
     }

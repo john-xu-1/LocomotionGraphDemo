@@ -685,7 +685,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   locomotionGraph: {fileID: 18255541}
   locomotionEdgePrefab: {fileID: 257368936}
-  DisplayRayCast: 1
+  DisplayRayCast: 0
+  removingEdgeCounter: -1
 --- !u!4 &1513650216
 Transform:
   m_ObjectHideFlags: 0
