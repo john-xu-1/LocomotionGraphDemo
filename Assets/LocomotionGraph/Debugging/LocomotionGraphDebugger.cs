@@ -40,7 +40,7 @@ namespace LocomotionGraph
         // Update is called once per frame
         void Update()
         {
-            if(!global::Utility.IsMouseOverUI() && !locomotionEdgeHandler.edgeHovered && !isUIActive) HandleMouseClickDebugging();
+            HandleMouseClickDebugging();
             //DisplayPlatformGraph();
         }
 
@@ -53,7 +53,11 @@ namespace LocomotionGraph
         {
             if (locomotionFunction == HandleLocomotionGraphFunction.displayPlatformGraph)
             {
-                HandleDisplayPlatformGraph();
+                if (!global::Utility.IsMouseOverUI() && !locomotionEdgeHandler.edgeHovered && !isUIActive)
+                {
+                    HandleDisplayPlatformGraph();
+                }
+                locomotionEdgeHandler.HandleUserInput();
             }
             else if (locomotionFunction == HandleLocomotionGraphFunction.printPlatformPath)
             {

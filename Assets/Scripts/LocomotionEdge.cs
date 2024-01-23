@@ -33,14 +33,19 @@ public class LocomotionEdge : MonoBehaviour
     }
 
 
-    public void OnMouseEnter()
+    //public void OnMouseEnter()
+    //{
+    //    locomotionEdgeHandler.EdgeHovering(1);
+    //}
+
+    //public void OnMouseExit()
+    //{
+    //    locomotionEdgeHandler.EdgeHovering(-1);
+    //}
+
+    public void OnMouseOver()
     {
         locomotionEdgeHandler.EdgeHovering(1);
-    }
-
-    public void OnMouseExit()
-    {
-        locomotionEdgeHandler.EdgeHovering(-1);
     }
 
     public void OnMouseUp()

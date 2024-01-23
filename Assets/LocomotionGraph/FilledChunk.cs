@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace LocomotionGraph
 {
+    [System.Serializable]
     public class FilledChunk
     {
         public List<Vector2Int> filledTiles = new List<Vector2Int>();
