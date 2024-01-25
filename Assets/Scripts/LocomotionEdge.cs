@@ -30,14 +30,19 @@ public class LocomotionEdge : MonoBehaviour
         this.sinkNodeID = sinkNodeID;
     }
 
-    private void OnMouseEnter()
+    //private void OnMouseEnter()
+    //{
+    //    locomotionEdgeHandler.EdgeHovering(2);
+    //}
+
+    //private void OnMouseExit()
+    //{
+    //    locomotionEdgeHandler.EdgeHovering(-2);
+    //}
+
+    private void OnMouseOver()
     {
         locomotionEdgeHandler.EdgeHovering(1);
-    }
-
-    private void OnMouseExit()
-    {
-        locomotionEdgeHandler.EdgeHovering(-1);
     }
 
     public void OnMouseUp()

@@ -29,6 +29,7 @@ public class LocomotionEdgeHandler : MonoBehaviour
 
     private void Update()
     {
+        if(edgesHovered > 0 ) edgesHovered--;
         if (removingEdgeCounter == 0)
         {
             RemoveEdge(toRemoveEdge);
@@ -46,6 +47,17 @@ public class LocomotionEdgeHandler : MonoBehaviour
         DisplayPlatformGraph();
     }
 
+    public void HandleUserInput()
+    {
+        if (Input.GetKey(KeyCode.Z) && Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.Z) && Input.GetKey(KeyCode.LeftControl) || 
+            Input.GetKey(KeyCode.Z) && Input.GetKeyDown(KeyCode.LeftCommand) || Input.GetKeyDown(KeyCode.Z) && Input.GetKey(KeyCode.LeftCommand) || 
+            Input.GetKey(KeyCode.Z) && Input.GetKeyDown(KeyCode.RightControl) || Input.GetKeyDown(KeyCode.Z) && Input.GetKey(KeyCode.RightControl) ||
+            Input.GetKey(KeyCode.Z) && Input.GetKeyDown(KeyCode.RightCommand) || Input.GetKeyDown(KeyCode.Z) && Input.GetKey(KeyCode.RightCommand))
+        {
+            UndoRemoveEdge();
+        }
+    }
+
     public void DisplayLocomotionGraph(bool display)
     {
         DisplayRaycast = display;
@@ -54,7 +66,7 @@ public class LocomotionEdgeHandler : MonoBehaviour
 
     public void DisplayLocomotionGraph(List<LocomotionGraphDebugger.PlatformChunkGraph> platformGraph)
     {
-        removedEdgeIDs.Clear();
+        //removedEdgeIDs.Clear();
         this.platformGraph = platformGraph;
         displayPlatformGraph = true;
     }
@@ -115,7 +127,26 @@ public class LocomotionEdgeHandler : MonoBehaviour
         {
             HandleReturnLocomotionEdges();
             FindObjectOfType<LocomotionGraphDebugger>().DisplayPlatformGraph();
-            removedEdgeIDs.Remove(edgeID);
+        }
+    }
+
+    public void UndoRemoveEdge()
+    {
+        // check that there are removed edges
+        if(removedEdgeIDs.Count > 0)
+        {
+            EdgeID edgeID = removedEdgeIDs[removedEdgeIDs.Count - 1];
+
+            // check that the edge to undo is a valid edge in current platformGraph
+            foreach (LocomotionGraphDebugger.PlatformChunkGraph connection in platformGraph)
+            {
+                if(edgeID.sourceID == connection.platform.nodeID)
+                {
+                    AddEdge(edgeID);
+                    removedEdgeIDs.Remove(edgeID);
+                    break;
+                }
+            }
         }
     }
 

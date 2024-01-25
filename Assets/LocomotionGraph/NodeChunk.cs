@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace LocomotionGraph
 {
+    [System.Serializable]
     public abstract class NodeChunk
     {
         public int nodeID;
