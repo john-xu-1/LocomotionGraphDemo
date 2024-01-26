@@ -20,17 +20,22 @@ public class LocomotionGraphDebuggerUI : MonoBehaviour
 
     public void updateChoice()
     {
-        if (dropdown.value == 0)
+        lgd.locomotionFunction = (LocomotionGraph.LocomotionGraphDebugger.HandleLocomotionGraphFunction) dropdown.value;
+
+        switch (lgd.locomotionFunction)
         {
-            lgd.locomotionFunction = LocomotionGraph.LocomotionGraphDebugger.HandleLocomotionGraphFunction.displayPlatformGraph;
-        }
-        else if (dropdown.value == 1)
-        {
-            lgd.locomotionFunction = LocomotionGraph.LocomotionGraphDebugger.HandleLocomotionGraphFunction.printPlatformPath;
-        }
-        else if (dropdown.value == 2)
-        {
-            lgd.locomotionFunction = LocomotionGraph.LocomotionGraphDebugger.HandleLocomotionGraphFunction.isValidWall;
+            case LocomotionGraphDebugger.HandleLocomotionGraphFunction.displayPlatformGraph:
+                // reset depth to inputted value (should display inputField)
+                updateDepth();
+
+                Debug.Log("Select a floor tile to display the graph which shows the platforms 'connect' to platform you have selected.");
+                break;
+            case LocomotionGraphDebugger.HandleLocomotionGraphFunction.addConnectionToPlatformGraph:
+                // set depth to zero to ensure clarity of which platforms you are adding connections to (should hide inputField)
+                lgd.generateChunkGraphDepth = 0;
+
+                Debug.Log("Start by selecting the platform you wish to add connection to.");
+                break;
         }
     }
 
@@ -88,6 +93,11 @@ public class LocomotionGraphDebuggerUI : MonoBehaviour
             lgd.locomotionGraph.RoomChunk.GetPlatform(nodeSave.nodeID).connectedPlatforms = nodeSave.connectionIDs;
         }
 
+    }
+
+    public void InputReceived(string message)
+    {
+        Debug.Log(message);
     }
 
 }
