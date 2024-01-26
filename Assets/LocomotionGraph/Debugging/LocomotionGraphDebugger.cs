@@ -15,11 +15,8 @@ namespace LocomotionGraph
 
         public bool isUIActive = false;
 
-        public enum HandleLocomotionGraphFunction { displayPlatformGraph, printPlatformPath, isValidWall }
+        public enum HandleLocomotionGraphFunction { displayPlatformGraph, printPlatformPath, isValidWall , addConnectionToPlatformGraph}
         public HandleLocomotionGraphFunction locomotionFunction;
-
-        //private bool displayPlatformGraph;
-        //List<PlatformChunkGraph> platformGraph;
 
         public class PlatformChunkGraph
         {
@@ -39,10 +36,10 @@ namespace LocomotionGraph
 
         // Update is called once per frame
         void Update()
-        {
+        { 
             HandleMouseClickDebugging();
-            //DisplayPlatformGraph();
         }
+
 
         private Vector2Int TilePosFromClick(Vector2 mousePosition)
         {
@@ -67,48 +64,93 @@ namespace LocomotionGraph
             {
                 HandleIsValidWall();
             }
+            else if(locomotionFunction == HandleLocomotionGraphFunction.addConnectionToPlatformGraph)
+            {
+                if (!global::Utility.IsMouseOverUI() && !locomotionEdgeHandler.edgeHovered && !isUIActive && locomotionGraph.RoomChunk != null && Input.GetMouseButtonUp(0))
+                {
+                    int clickedPlatformID = GetClickedPlatformID(TilePosFromClick(Input.mousePosition));
+                    int selectedPlatformID = locomotionEdgeHandler.GetDisplayingPlatformID();
+                    Debug.Log($"selectedPlatformID {selectedPlatformID} clickedPlatformID {clickedPlatformID}");
+                    if (selectedPlatformID > 0 && clickedPlatformID > 0)
+                    {
+                        if(selectedPlatformID != clickedPlatformID)
+                        {
+                            locomotionEdgeHandler.AddEdge(clickedPlatformID);
+                        }
+                        else
+                        {
 
+                        }
+                    }
+                    else if (selectedPlatformID == 0)
+                    {
+                        Debug.LogWarning("empty tile selected warning.");
+                    }
+                    else if(clickedPlatformID < 0)
+                    {
+                        locomotionEdgeHandler.DisplayLocomotionGraph(false);
+                    }
+                    else
+                    {
+                        startingPlatformID = clickedPlatformID;
+                        HandleDisplayPlatformGraph();
+                    }
+                }
+                locomotionEdgeHandler.HandleUserInput();
+            }
 
+        }
+
+        private int GetClickedPlatformID(Vector2Int clickTile)
+        {
+            
+
+            // find platformID from the clicked tile
+            int startingPlatformID = locomotionGraph.RoomChunk.GetPlatformID(clickTile);
+            int filledChunkID = startingPlatformID / FilledChunk.nodeIDOffset;
+            int platformChunkId = startingPlatformID % FilledChunk.nodeIDOffset;
+            Debug.LogWarning($"clickTile: {clickTile} PlatformIDClicked: {startingPlatformID}  filledChunkID:{filledChunkID} platformID{platformChunkId}");
+
+            // check that clicked tile is within the room chunk, not an empty tile and surface tile
+            if (platformChunkId < 0)
+            {
+                Debug.LogWarning($"Click is out of range of RoomChunk. startingPlatformID({startingPlatformID}) filledChunkID({filledChunkID}) platformID({platformChunkId})");
+                return -1;
+            }
+            else if (startingPlatformID == 0)
+            {
+                Debug.LogWarning($"Click is on empty tile and not a valid staring platform. startingPlatformID({startingPlatformID}) filledChunkID({filledChunkID}) platformID({platformChunkId})");
+                return -1;
+            }
+            else if (platformChunkId == 0)
+            {
+                Debug.LogWarning($"Click is on filled tile but is not a platform tile. startingPlatformID({startingPlatformID}) filledChunkID({filledChunkID}) platformID({platformChunkId})");
+                return - 1;
+            }
+
+            return startingPlatformID;
         }
 
         protected void HandleDisplayPlatformGraph()
         {
             if (locomotionGraph.RoomChunk != null && Input.GetMouseButtonUp(0))
             {
-                locomotionEdgeHandler.DisplayLocomotionGraph (false);
-                Vector2Int clickTile = TilePosFromClick(Input.mousePosition);// new Vector2Int((int)Mathf.Floor(Camera.main.ScreenToWorldPoint(Input.mousePosition).x), (int)Mathf.Floor(Camera.main.ScreenToWorldPoint(Input.mousePosition).y));
+                startingPlatformID = GetClickedPlatformID(TilePosFromClick(Input.mousePosition));
 
-                // find platformID from click tile 
-                startingPlatformID = locomotionGraph.RoomChunk.GetPlatformID(clickTile);
-                int filledChunkID = startingPlatformID / FilledChunk.nodeIDOffset;
-                int platformChunkId = startingPlatformID % FilledChunk.nodeIDOffset;
-                //Debug.LogWarning($"clickTile: {clickTile} PlatformIDClicked: {startingPlatformID}  filledChunkID:{filledChunkID} platformID{platformChunkId}");
-
-                // check that clicked tile is within the room chunk, not an empty tile and a surface tile
-                if (startingPlatformID < 0)
+                if(startingPlatformID > 0)
                 {
-                    Debug.LogWarning($"Click is out of range of RoomChunk. startingPlatformID({startingPlatformID}) filledChunkID({filledChunkID}) platformID({platformChunkId})");
-                    return;
+                    locomotionEdgeHandler.DisplayLocomotionGraph(false);
+                    DisplayPlatformGraph();
                 }
-                else if (startingPlatformID == 0)
-                {
-                    Debug.LogWarning($"Click is on empty tile and not a starting platform. startingPlatformID({startingPlatformID}) filledChunkID({filledChunkID}) platformID({platformChunkId})");
-                    return;
-                }
-                else if (platformChunkId == 0)
-                {
-                    Debug.LogWarning($"Click is on filled tile but is not a platform tile. startingPlatformID({startingPlatformID}) filledChunkID({filledChunkID}) platformID({platformChunkId})");
-                    return;
-                }
-
-                DisplayPlatformGraph();
-
+                    
             }
         }
 
         public void DisplayPlatformGraph()
         {
-            // start thread to generate the chunk graph
+
+            // start thread to generate the chunch graph
+            Debug.Log($"startPlatformID {startingPlatformID}");
             Thread thread = new Thread(GenerateChunkGraphThread);
             thread.Start();
         }
@@ -126,8 +168,6 @@ namespace LocomotionGraph
                 //GenerateConnectedChunkGraph();
             }
         }
-
-        
 
         protected void HandleIsValidWall()
         {
@@ -190,13 +230,13 @@ namespace LocomotionGraph
                 platformChunkGraph.graphColor = Color.red;
                 platformChunkGraphs.Add(platformChunkGraph);
             }
-            locomotionEdgeHandler.DisplayLocomotionGraph( platformChunkGraphs);
-            locomotionEdgeHandler.DisplayLocomotionGraph( true);
+            locomotionEdgeHandler.DisplayLocomotionGraph(platformChunkGraphs);
+            locomotionEdgeHandler.DisplayLocomotionGraph(true);
         }
 
         public void GenerateConnectedChunkGraph()
         {
-            locomotionEdgeHandler.DisplayLocomotionGraph( false);
+            locomotionEdgeHandler.DisplayLocomotionGraph(false);
             Thread thread = new Thread(GenerateConnectedChunkGraphThread);
             thread.Start();
         }

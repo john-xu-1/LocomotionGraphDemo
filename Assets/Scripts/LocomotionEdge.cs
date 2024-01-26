@@ -11,39 +11,36 @@ public class LocomotionEdge : MonoBehaviour
     public void SetEdgeHandler(LocomotionEdgeHandler locomotionEdgeHandler)
     {
         this.locomotionEdgeHandler = locomotionEdgeHandler;
-
     }
 
-    public void SetPositions (Vector3[] points)
+    public void SetPositions(Vector3[] points)
     {
         line.SetPositions(points);
         List<Vector2> twoDPoints = new List<Vector2>();
-        foreach (Vector3 point in points)
+        foreach(Vector3 point in points)
         {
             twoDPoints.Add(new Vector2(point.x, point.y));
         }
         GetComponent<EdgeCollider2D>().SetPoints(twoDPoints);
     }
 
-
-    public void SetNodeIDs(int sourceNodeID,int sinkNodeID)
+    public void SetNodeIDs(int sourceNodeID, int sinkNodeID)
     {
         this.sourceNodeID = sourceNodeID;
         this.sinkNodeID = sinkNodeID;
     }
 
-
-    //public void OnMouseEnter()
+    //private void OnMouseEnter()
     //{
-    //    locomotionEdgeHandler.EdgeHovering(1);
+    //    locomotionEdgeHandler.EdgeHovering(2);
     //}
 
-    //public void OnMouseExit()
+    //private void OnMouseExit()
     //{
-    //    locomotionEdgeHandler.EdgeHovering(-1);
+    //    locomotionEdgeHandler.EdgeHovering(-2);
     //}
 
-    public void OnMouseOver()
+    private void OnMouseOver()
     {
         locomotionEdgeHandler.EdgeHovering(1);
     }
@@ -52,5 +49,4 @@ public class LocomotionEdge : MonoBehaviour
     {
         FindObjectOfType<LocomotionEdgeHandler>().RemoveEdge(sourceNodeID, sinkNodeID);
     }
-
 }

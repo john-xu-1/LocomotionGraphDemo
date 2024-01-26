@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace LocomotionGraph
 {
+    [System.Serializable]
     public abstract class NodeChunk
     {
         public int nodeID;
@@ -38,12 +39,14 @@ namespace LocomotionGraph
         {
             return GetTilePos(GetCenterTile());
         }
+
+
         /// <summary>
-        /// Returns trueif connectedID was valid and thus removed.
+        /// Returns true if connectedID was valid and thus removed.
         /// </summary>
         /// <param name="connectedID"></param>
         /// <returns></returns>
-        public virtual bool RemoveConnectedPlatform (int connectedID)
+        public virtual bool RemoveConnectedPlatform(int connectedID)
         {
             if (connectedPlatforms.Contains(connectedID))
             {
@@ -52,12 +55,12 @@ namespace LocomotionGraph
             }
             else
             {
-                Debug.LogWarning($"invalid connectedID({connectedID}) to be removed");
+                Debug.LogWarning($"invalid connectedID({connectedID}) to be removed.");
                 return false;
             }
         }
 
-        public virtual bool AddConnectedPlatform(int connectedID)
+        public virtual bool AddConnectPlatform(int connectedID)
         {
             if (!connectedPlatforms.Contains(connectedID))
             {
@@ -66,7 +69,7 @@ namespace LocomotionGraph
             }
             else
             {
-                Debug.LogWarning($"invalid connectedID({connectedID}) is already in connectedPlatforms");
+                Debug.LogWarning($"connectedID({connectedID}) is already in connectedPlatoforms");
                 return false;
             }
         }

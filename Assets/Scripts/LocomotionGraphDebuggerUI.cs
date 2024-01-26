@@ -12,25 +12,30 @@ public class LocomotionGraphDebuggerUI : MonoBehaviour
     public Dropdown dropdown;
     public InputField input;
 
-
     public void updateDepth()
     {
         lgd.generateChunkGraphDepth = int.Parse(input.text);
+        
     }
 
     public void updateChoice()
     {
-        if (dropdown.value == 0)
+        lgd.locomotionFunction = (LocomotionGraph.LocomotionGraphDebugger.HandleLocomotionGraphFunction) dropdown.value;
+
+        switch (lgd.locomotionFunction)
         {
-            lgd.locomotionFunction = LocomotionGraph.LocomotionGraphDebugger.HandleLocomotionGraphFunction.displayPlatformGraph;
-        }
-        else if (dropdown.value == 1)
-        {
-            lgd.locomotionFunction = LocomotionGraph.LocomotionGraphDebugger.HandleLocomotionGraphFunction.printPlatformPath;
-        }
-        else if (dropdown.value == 2)
-        {
-            lgd.locomotionFunction = LocomotionGraph.LocomotionGraphDebugger.HandleLocomotionGraphFunction.isValidWall;
+            case LocomotionGraphDebugger.HandleLocomotionGraphFunction.displayPlatformGraph:
+                // reset depth to inputted value (should display inputField)
+                updateDepth();
+
+                Debug.Log("Select a floor tile to display the graph which shows the platforms 'connect' to platform you have selected.");
+                break;
+            case LocomotionGraphDebugger.HandleLocomotionGraphFunction.addConnectionToPlatformGraph:
+                // set depth to zero to ensure clarity of which platforms you are adding connections to (should hide inputField)
+                lgd.generateChunkGraphDepth = 0;
+
+                Debug.Log("Start by selecting the platform you wish to add connection to.");
+                break;
         }
     }
 
@@ -41,35 +46,38 @@ public class LocomotionGraphDebuggerUI : MonoBehaviour
         cameraController.isUIActive = debugUI.activeSelf;
     }
 
-    public void saveGraphButton()
+    public void SaveGraphButton()
     {
         NodesSave save = new NodesSave();
         save.nodes = new List<NodeSave>();
         save.nodeIDs = new List<int>();
 
-        //loop through every nodeCuhnk in filledChunk and create a NodeSave from nodeSave and connectedPlatform
-        foreach (FilledChunk filledChunk in lgd.locomotionGraph.RoomChunk.filledChunks)
+        // loop through every nodeChunk in filledChunk and create a NodeSave from the nodeID and connectedPlatforms
+        foreach(FilledChunk filledChunk in lgd.locomotionGraph.RoomChunk.filledChunks)
         {
-            foreach (NodeChunk node in filledChunk.platforms)
+            foreach(NodeChunk node in filledChunk.platforms)
             {
                 NodeSave nodeSave = new NodeSave();
                 nodeSave.nodeID = node.nodeID;
-                nodeSave.connectionIDS = node.connectedPlatforms;
-                if (node.connectedPlatforms != null)
+                nodeSave.connectionIDs = node.connectedPlatforms;
+                if(node.connectedPlatforms != null)
                 {
                     foreach (int connection in node.connectedPlatforms)
                     {
-                        if (!save.nodeIDs.Contains(connection))
+                        if (save.nodeIDs.Contains(connection) == false)
                         {
                             save.nodeIDs.Add(connection);
                         }
                     }
                     save.nodes.Add(nodeSave);
                 }
+
+                if (save.nodeIDs.Contains(node.nodeID) == false) save.nodeIDs.Add(node.nodeID);
+                
             }
         }
 
-        string json = JsonUtility.ToJson( save, true);
+        string json = JsonUtility.ToJson(save, true);
         Clingo_02.ClingoUtil.CreateFile(json, "RoomChunk.txt");
     }
 
@@ -79,27 +87,30 @@ public class LocomotionGraphDebuggerUI : MonoBehaviour
 
         // need to check to verify that the current roomchunk has the correct nodes
 
-        //loop through NodesSave and update the roomCunk's platform
-        foreach (NodeSave nodeSave in save.nodes)
+        // loop through NodesSave and update the RoomChunk's platforms
+        foreach(NodeSave nodeSave in save.nodes)
         {
-            lgd.locomotionGraph.RoomChunk.GetPlatform(nodeSave.nodeID).connectedPlatforms = nodeSave.connectionIDS;
+            lgd.locomotionGraph.RoomChunk.GetPlatform(nodeSave.nodeID).connectedPlatforms = nodeSave.connectionIDs;
         }
+
     }
 
-
-
-    [System.Serializable]
-    public struct NodesSave
+    public void InputReceived(string message)
     {
-        public List<NodeSave> nodes;
-        public List<int> nodeIDs;
+        Debug.Log(message);
     }
 
-    [System.Serializable]
-    public struct NodeSave
-    {
-        public int nodeID;
-        public List<int> connectionIDS;
-    }
+}
 
+[System.Serializable]
+public struct NodesSave
+{
+    public List<NodeSave> nodes;
+    public List<int> nodeIDs;
+}
+[System.Serializable]
+public struct NodeSave
+{
+    public int nodeID;
+    public List<int> connectionIDs;
 }
