@@ -390,6 +390,20 @@ namespace LocomotionGraph
                 }
             }
         }
+
+        public void DisplayAnswerset(Clingo_02.AnswerSet answerSet)
+        {
+            foreach(List<string> start in answerSet.Value["start"])
+            {
+                Debug.Log($"start NodeID: {start[0]}");
+            }
+            
+            foreach(List<string> end in answerSet.Value["end"])
+            {
+                Debug.Log($"end NodeID: {end[0]}");
+            }
+            
+        }
     }
 }
 

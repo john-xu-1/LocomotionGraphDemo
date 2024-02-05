@@ -165,17 +165,24 @@ public class LocomotionEdgeHandler : MonoBehaviour
         // check that there are removed edges
         if(removedEdgeIDs.Count > 0)
         {
-            EdgeID edgeID = removedEdgeIDs[removedEdgeIDs.Count - 1];
-
-            // check that the edge to undo is a valid edge in current platformGraph
-            foreach (LocomotionGraphDebugger.PlatformChunkGraph connection in platformGraph)
+            // checking for a valid edgeID that is currently present in the platformGraph in reverse order
+            // undoes the last edge that was removed found in platformGraph
+            for(int i = removedEdgeIDs.Count - 1; i >= 0; i--)
             {
-                if(edgeID.sourceID == connection.platform.nodeID)
+                EdgeID edgeID = removedEdgeIDs[i];
+                bool found = false;
+                // check that the edge to undo is a valid edge in current platformGraph
+                foreach (LocomotionGraphDebugger.PlatformChunkGraph connection in platformGraph)
                 {
-                    AddEdge(edgeID);
-                    removedEdgeIDs.Remove(edgeID);
-                    break;
+                    if (edgeID.sourceID == connection.platform.nodeID)
+                    {
+                        AddEdge(edgeID);
+                        removedEdgeIDs.Remove(edgeID);
+                        found = true;
+                        break;
+                    }
                 }
+                if (found) break;
             }
         }
     }

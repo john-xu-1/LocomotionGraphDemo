@@ -97,8 +97,25 @@ namespace LocomotionGraph
 
             //";
 
-            //return aspCode + GetNodeChunksMemory();
-            return GetNodeChunksMemory();
+            string aspCode = $@"
+                1{{start(NodeID) : node(NodeID)}}1.
+                1{{end(NodeID) : node(NodeID)}}1.
+                :- start(SNode), end(ENode), SNode == ENode.
+
+                gates(1..5).
+                1{{gate(GID, NodeID) : node(NodeID)}} :- gates(GID).
+                1{{key(GID, NodeID) : node(NodeID)}}1 :- gates(GID).
+
+            ";
+
+            return aspCode + GetNodeChunksMemory();
+            //return GetNodeChunksMemory();
+        }
+
+        override protected void SATISFIABLE(Clingo_02.AnswerSet answerSet, string jobID)
+        {
+            FindObjectOfType<LocomotionGraphDebugger>().DisplayAnswerset(answerSet);
+            
         }
     }
 }
