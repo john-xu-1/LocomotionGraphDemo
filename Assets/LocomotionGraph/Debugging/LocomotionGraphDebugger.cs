@@ -393,16 +393,41 @@ namespace LocomotionGraph
 
         public void DisplayAnswerset(Clingo_02.AnswerSet answerSet)
         {
-            foreach(List<string> start in answerSet.Value["start"])
+            POIHandler poiHandler = FindObjectOfType<POIHandler>();
+            foreach (List<string> start in answerSet.Value["start"])
             {
                 Debug.Log($"start NodeID: {start[0]}");
+                NodeChunk node = locomotionGraph.RoomChunk.GetPlatform(int.Parse(start[0]));
+                Vector2Int centerTile = node.GetCenterTile();
+                Vector2 pos = new Vector2(centerTile.x + locomotionGraph.RoomChunk.minTile.x + 0.5f, -centerTile.y + 1 - locomotionGraph.RoomChunk.maxTile.y - 0.5f);
+                poiHandler.SetPOI(pos, "start", Color.green);
             }
             
             foreach(List<string> end in answerSet.Value["end"])
             {
                 Debug.Log($"end NodeID: {end[0]}");
+                NodeChunk node = locomotionGraph.RoomChunk.GetPlatform(int.Parse(end[0]));
+                Vector2Int centerTile = node.GetCenterTile();
+                Vector2 pos = new Vector2(centerTile.x + locomotionGraph.RoomChunk.minTile.x + 0.5f, -centerTile.y + 1 - locomotionGraph.RoomChunk.maxTile.y - 0.5f);
+                poiHandler.SetPOI(pos, "end", Color.red);
             }
-            
+
+            foreach(List<string> gate in answerSet.Value["gate"])
+            {
+                NodeChunk node = locomotionGraph.RoomChunk.GetPlatform(int.Parse(gate[1]));
+                Vector2Int centerTile = node.GetCenterTile();
+                Vector2 pos = new Vector2(centerTile.x + locomotionGraph.RoomChunk.minTile.x + 0.5f, -centerTile.y + 1 - locomotionGraph.RoomChunk.maxTile.y - 0.5f);
+                poiHandler.SetPOI(pos, gate[0], Color.yellow);
+            }
+
+            foreach (List<string> key in answerSet.Value["key"])
+            {
+                NodeChunk node = locomotionGraph.RoomChunk.GetPlatform(int.Parse(key[1]));
+                Vector2Int centerTile = node.GetCenterTile();
+                Vector2 pos = new Vector2(centerTile.x + locomotionGraph.RoomChunk.minTile.x + 0.5f, -centerTile.y + 1 - locomotionGraph.RoomChunk.maxTile.y - 0.5f);
+                poiHandler.SetPOI(pos, key[0], Color.blue);
+            }
+
         }
     }
 }

@@ -329,7 +329,7 @@ MonoBehaviour:
   FindMultipleSolutions: 0
   numOfSolutionsWanted: 1
   _seed: 42
-  useRandomSeed: 0
+  useRandomSeed: 1
   saveToFile: 1
   answerSet:
     Solver: 

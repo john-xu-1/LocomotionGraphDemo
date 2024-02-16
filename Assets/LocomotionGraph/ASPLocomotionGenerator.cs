@@ -102,9 +102,35 @@ namespace LocomotionGraph
                 1{{end(NodeID) : node(NodeID)}}1.
                 :- start(SNode), end(ENode), SNode == ENode.
 
-                gates(1..5).
+                gates(1..2).
                 1{{gate(GID, NodeID) : node(NodeID)}} :- gates(GID).
                 1{{key(GID, NodeID) : node(NodeID)}}1 :- gates(GID).
+
+                :- key(G1, N1), key(G2, N2), G1 != G2, N1 == N2.
+
+                %% key and gate not on same node %%
+                :- gate(_, GNode), key(_, KNode), GNode == KNode.
+
+                :- start(SNode), gate(_,GNode), SNode == GNode.
+                :- key(_, KNode), start(SNode), KNode == SNode.
+                
+                :- end(SNode), gate(_,GNode), SNode == GNode.
+                :- key(_, KNode), end(SNode), KNode == SNode.
+
+                path_count(0..20).
+                path(NodeID, 0) :- start(NodeID).
+                %% if a node has path(NodeID) and there is an edge from NodeID to another NodeID2 add path(NodeID2)
+                path(NodeID2, Path + 1) :- node(NodeID2), node(NodeID), path(NodeID, Path), edge(NodeID, NodeID2), path_count(Path + 1).
+                
+                %% end(NodeID) must be on the path
+                :- end(NodeID), not path(NodeID, _).
+                :- key(_, NodeID), not path(NodeID, _).
+                :- gate(_, NodeID), not path(NodeID, _).
+
+                %% find key before needing gate
+                :- key(GID, KNode), gate(GID, GNode), path(KNode, KStep), path(GNode, GStep), KStep > GStep.
+
+                
 
             ";
 
