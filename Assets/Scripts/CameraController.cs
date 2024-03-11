@@ -18,6 +18,11 @@ public class CameraController : MonoBehaviour
         {
             Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize + Input.mouseScrollDelta.y * scrollScale, minCameraSize, maxCameraSize);
 
+            if (Input.GetMouseButtonDown(1))
+            {
+                previousMoustPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            }
+
             if (Input.GetMouseButton(1))
             {
                 Vector3 mouseDelta = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition) - previousMoustPos;

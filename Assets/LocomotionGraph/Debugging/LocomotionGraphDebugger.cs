@@ -417,7 +417,20 @@ namespace LocomotionGraph
                 NodeChunk node = locomotionGraph.RoomChunk.GetPlatform(int.Parse(gate[1]));
                 Vector2Int centerTile = node.GetCenterTile();
                 Vector2 pos = new Vector2(centerTile.x + locomotionGraph.RoomChunk.minTile.x + 0.5f, -centerTile.y + 1 - locomotionGraph.RoomChunk.maxTile.y - 0.5f);
-                poiHandler.SetPOI(pos, gate[0], Color.yellow);
+                
+
+                int gstep = int.MaxValue;
+                Debug.Log($"Checking gate {gate[0]}:");
+                foreach(List<string> path in answerSet.Value["path"])
+                {
+                    if(path[0] == gate[1]) // path(NodeID,T) gath(GID, NodeID)
+                    {
+                        Debug.Log($"kstep: {path[1]}");
+                        if (int.Parse(path[1]) < gstep) gstep = int.Parse(path[1]);
+                    }
+                }
+
+                poiHandler.SetPOI(pos, $"GID:{gate[0]}\nT:{gstep}" , Color.yellow);
             }
 
             foreach (List<string> key in answerSet.Value["key"])
