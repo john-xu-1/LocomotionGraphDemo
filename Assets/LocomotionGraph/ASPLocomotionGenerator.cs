@@ -109,6 +109,7 @@ namespace LocomotionGraph
                 1{{key(GID, NodeID) : node(NodeID)}}1 :- gates(GID).
 
                 :- key(G1, N1), key(G2, N2), G1 != G2, N1 == N2.
+                :- gate(G1, N1), gate(G2, N2), G1 != G2, N1 == N2.
 
 
                 %% key and gate not on same node %%
