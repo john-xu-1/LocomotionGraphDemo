@@ -391,16 +391,30 @@ namespace LocomotionGraph
             }
         }
 
+        List<int> poiIDs = new List<int>();
         public void DisplayAnswerset(Clingo_02.AnswerSet answerSet)
         {
+
             POIHandler poiHandler = FindObjectOfType<POIHandler>();
+            if(poiIDs.Count > 0)
+            {
+                // return all poi before placing new ones
+                for(int i = poiIDs.Count -1; i >= 0; i--)
+                {
+                    poiHandler.ReturnPOI(poiIDs[i]);
+                    poiIDs.RemoveAt(i);
+                }
+                
+            }
+
             foreach (List<string> start in answerSet.Value["start"])
             {
                 Debug.Log($"start NodeID: {start[0]}");
                 NodeChunk node = locomotionGraph.RoomChunk.GetPlatform(int.Parse(start[0]));
                 Vector2Int centerTile = node.GetCenterTile();
                 Vector2 pos = new Vector2(centerTile.x + locomotionGraph.RoomChunk.minTile.x + 0.5f, -centerTile.y + 1 - locomotionGraph.RoomChunk.maxTile.y - 0.5f);
-                poiHandler.SetPOI(pos, "start", Color.green);
+                int poiID = poiHandler.SetPOI(pos, "start", Color.green);
+                poiIDs.Add(poiID);
             }
             
             foreach(List<string> end in answerSet.Value["end"])
@@ -409,7 +423,8 @@ namespace LocomotionGraph
                 NodeChunk node = locomotionGraph.RoomChunk.GetPlatform(int.Parse(end[0]));
                 Vector2Int centerTile = node.GetCenterTile();
                 Vector2 pos = new Vector2(centerTile.x + locomotionGraph.RoomChunk.minTile.x + 0.5f, -centerTile.y + 1 - locomotionGraph.RoomChunk.maxTile.y - 0.5f);
-                poiHandler.SetPOI(pos, "end", Color.red);
+                int poiID = poiHandler.SetPOI(pos, "end", Color.red);
+                poiIDs.Add(poiID);
             }
 
             foreach(List<string> gate in answerSet.Value["gate"])
@@ -430,7 +445,8 @@ namespace LocomotionGraph
                     }
                 }
 
-                poiHandler.SetPOI(pos, $"GID:{gate[0]}\nT:{gstep}" , Color.yellow);
+                int poiID = poiHandler.SetPOI(pos, $"GID:{gate[0]}\nT:{gstep}" , Color.yellow);
+                poiIDs.Add(poiID);
             }
 
             foreach (List<string> key in answerSet.Value["key"])
@@ -438,7 +454,8 @@ namespace LocomotionGraph
                 NodeChunk node = locomotionGraph.RoomChunk.GetPlatform(int.Parse(key[1]));
                 Vector2Int centerTile = node.GetCenterTile();
                 Vector2 pos = new Vector2(centerTile.x + locomotionGraph.RoomChunk.minTile.x + 0.5f, -centerTile.y + 1 - locomotionGraph.RoomChunk.maxTile.y - 0.5f);
-                poiHandler.SetPOI(pos, key[0], Color.blue);
+                int poiID = poiHandler.SetPOI(pos, key[0], Color.blue);
+                poiIDs.Add(poiID);
             }
 
         }

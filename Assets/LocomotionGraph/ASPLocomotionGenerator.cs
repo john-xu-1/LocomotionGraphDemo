@@ -98,39 +98,50 @@ namespace LocomotionGraph
             //";
 
             string aspCode = $@"
+
+                %% placing start and end nodes in unique locations %%
                 1{{start(NodeID) : node(NodeID)}}1.
                 1{{end(NodeID) : node(NodeID)}}1.
                 :- start(SNode), end(ENode), SNode == ENode.
 
+                %% creating gates and keys %%
                 gates(1..2).
                 1{{gate(GID, NodeID) : node(NodeID)}}2 :- gates(GID).
                 1{{key(GID, NodeID) : node(NodeID)}}1 :- gates(GID).
 
+                %% no keys or gates overlap with a key or a gate %%
                 :- key(G1, N1), key(G2, N2), G1 != G2, N1 == N2.
                 :- gate(G1, N1), gate(G2, N2), G1 != G2, N1 == N2.
-
-                %% key and gate not on same node %%
                 :- gate(_, GNode), key(_, KNode), GNode == KNode.
 
+                %% the start node cannot have a key or a gate on it %%
                 :- start(SNode), gate(_,GNode), SNode == GNode.
                 :- key(_, KNode), start(SNode), KNode == SNode.
                 
+                %% the end node cannot have a key or a gate on it %%
                 :- end(SNode), gate(_,GNode), SNode == GNode.
                 :- key(_, KNode), end(SNode), KNode == SNode.
 
+
+
+            ";
+
+            string aspCodePath = $@"
+
+                %% path stuff %%
                 path_count(0..20).
                 path(NodeID, 0) :- start(NodeID).
-                %% if a node has path(NodeID) and there is an edge from NodeID to another NodeID2 add path(NodeID2)
-                %path(NodeID2, Path + 1) :- node(NodeID2), node(NodeID), path(NodeID, Path), edge(NodeID, NodeID2), path_count(Path + 1).
 
-                path(NodeID2, T + 1) :- node(NodeID2), node(NodeID), path(NodeID, T), edge(NodeID,NodeID2), path_count(T+1), not gate(_,NodeID).
-                path(NodeID2, T + 1) :- node(NodeID2), node(NodeID), path(NodeID, T), edge(NodeID,NodeID2), path_count(T+1), gate(GID,NodeID), have_key(GID, KT), T >= KT.
-                
                 %% end(NodeID) must be on the path
                 :- end(NodeID), not path(NodeID, _).
                 :- key(_, NodeID), not path(NodeID, _).
                 :- gate(_, NodeID), not path(NodeID, _).
 
+                %% if no gate there is a path between two node if an edge connects them
+                %% if gate there is a path between two node as long as the key can be reached before passing through the gate
+                path(NodeID2, T + 1) :- node(NodeID2), node(NodeID), path(NodeID, T), edge(NodeID,NodeID2), path_count(T+1), not gate(_,NodeID2).
+                path(NodeID2, T + 1) :- node(NodeID2), node(NodeID), path(NodeID, T), edge(NodeID,NodeID2), path_count(T+1), gate(GID,NodeID2), have_key(GID, KT), T >= KT.
+                
 
                 %% find key before needing gate
                 %:- key(GID, KNode), gate(GID, GNode), path(KNode, KStep), path(GNode, GStep), KStep > GStep.
@@ -143,9 +154,25 @@ namespace LocomotionGraph
                 have_key(GID, 0) :- key_present(GID).
 
 
+                %% ensure path is longer than some integer T (10)
+                %:- end(NodeID), path(NodeID, T), T < 10.
+
+
+                %% poi starting points, keys and gates
+                poi_path(GID, NodeID, GPID) :- key(GID, NodeID), GPID = NodeID.
+                poi_path(GID, NodeID, GPID) :- gate(GID, NodeID), GPID = NodeID.
+
+                %% poi path extension
+                poi_path(GID, SinkID, GPID) :- edge(SourceID, SinkID), poi_path(GID, SourceID, GPID). 
+
+                %% poi path termination for gate at end and key at gate
+                :- end(NodeID), gate(GID, GPID), not poi_path(GID, NodeID, GPID).
+                :- gate(GID, GNodeID), key(GID, KNodeID), not poi_path(GID, GNodeID, KNodeID).
             ";
 
-            return aspCode + GetNodeChunksMemory();
+
+
+            return aspCode + aspCodePath + GetNodeChunksMemory();
             //return GetNodeChunksMemory();
         }
 
